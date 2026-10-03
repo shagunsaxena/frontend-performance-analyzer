@@ -1,18 +1,19 @@
-import express = require("express");
-import { analyzePerformance } from "../services/performance.service";
+import { Router, type Request, type Response } from "express";
+import { analyzePerformance } from "../services/performance.service.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get('/api/performance', async (req, res) => {
-    const url = req.query.url;
+router.get("/", async (req: Request, res: Response) => {
+  const url = req.query.url;
 
-    if (typeof url !== 'string') {
-        return res
-        .status(400)
-        .json({ success: false, error: 'Missing url query parameter' });
-    }
+  if (typeof url !== "string") {
+    return res.status(400).json({
+      success: false,
+      error: "Missing url query parameter",
+    });
+  }
 
-    try {
+  try {
     new URL(url);
   } catch {
     return res.status(400).json({
@@ -23,15 +24,22 @@ router.get('/api/performance', async (req, res) => {
 
   try {
     const performanceData = await analyzePerformance(url);
-    res.json({ 
-        success: true, 
-        data: performanceData });
-  } catch (error) {
-    res.status(500).json({ 
-        success: false, 
-        error: 'Unable to analyze website performance' });
-  }
 
+    return res.json({
+      success: true,
+      data: performanceData,
+    });
+  } catch (error) {
+    console.error("PERFORMANCE ANALYSIS ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unable to analyze website performance",
+    });
+  }
 });
 
-export = router;
+export default router;

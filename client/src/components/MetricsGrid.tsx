@@ -7,7 +7,7 @@ import "./MetricsGrid.css";
 
 interface Metrics {
   lcp: number;
-  inp: number;
+  inp: number | null;
   cls: number;
   fcp: number;
 }
@@ -21,30 +21,30 @@ function MetricsGrid({ metrics }: MetricsGridProps) {
     name: MetricName;
     label: string;
     value: string;
-    rawValue: number;
+    rawValue: number | null;
   }[] = [
     {
       name: "lcp",
       label: "Largest Contentful Paint",
-      value: `${metrics.lcp}s`,
+      value: `${metrics.lcp.toFixed(2)}s`,
       rawValue: metrics.lcp,
     },
     {
       name: "inp",
       label: "Interaction to Next Paint",
-      value: `${metrics.inp}ms`,
+      value: metrics.inp === null ? "Not available" : `${metrics.inp}ms`,
       rawValue: metrics.inp,
     },
     {
       name: "cls",
       label: "Cumulative Layout Shift",
-      value: metrics.cls.toString(),
+      value: metrics.cls.toFixed(3),
       rawValue: metrics.cls,
     },
     {
       name: "fcp",
       label: "First Contentful Paint",
-      value: `${metrics.fcp}s`,
+      value: `${metrics.fcp.toFixed(2)}s`,
       rawValue: metrics.fcp,
     },
   ];
@@ -58,10 +58,10 @@ function MetricsGrid({ metrics }: MetricsGridProps) {
 
       <div className="metrics-grid">
         {metricItems.map((metric) => {
-          const status = getMetricStatus(
-            metric.name,
-            metric.rawValue
-          );
+          const status =
+            metric.rawValue === null
+              ? null
+              : getMetricStatus(metric.name, metric.rawValue);
 
           return (
             <article className="metric-card" key={metric.name}>
@@ -70,14 +70,20 @@ function MetricsGrid({ metrics }: MetricsGridProps) {
                   {metric.name.toUpperCase()}
                 </span>
 
-                <span className={`metric-status ${status}`}>
-                  {getMetricStatusLabel(status)}
-                </span>
+                {status && (
+                  <span className={`metric-status ${status}`}>
+                    {getMetricStatusLabel(status)}
+                  </span>
+                )}
+
+                {!status && (
+                  <span className="metric-status unavailable">
+                    Unavailable
+                  </span>
+                )}
               </div>
 
-              <strong className="metric-value">
-                {metric.value}
-              </strong>
+              <strong className="metric-value">{metric.value}</strong>
 
               <p className="metric-label">{metric.label}</p>
             </article>

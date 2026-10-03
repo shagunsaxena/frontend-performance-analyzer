@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import {
-  getPerformanceIndex,
+  thresholds,
   type MetricName,
 } from "../utils/performance";
 import "./PerformanceChart.css";
@@ -23,7 +23,7 @@ ChartJS.register(
 
 interface Metrics {
   lcp: number;
-  inp: number;
+  inp: number | null;
   cls: number;
   fcp: number;
 }
@@ -32,34 +32,38 @@ interface PerformanceChartProps {
   metrics: Metrics;
 }
 
-function PerformanceChart({
-  metrics,
-}: PerformanceChartProps) {
-  const metricNames: MetricName[] = [
-    "lcp",
-    "inp",
-    "cls",
-    "fcp",
-  ];
+function PerformanceChart({ metrics }: PerformanceChartProps) {
+  const metricValues: Record<MetricName, number | null> = {
+    lcp: metrics.lcp,
+    inp: metrics.inp,
+    cls: metrics.cls,
+    fcp: metrics.fcp,
+  };
 
-  const values = [
-    metrics.lcp,
-    metrics.inp,
-    metrics.cls,
-    metrics.fcp,
-  ];
+  const availableMetrics = (
+    Object.keys(metricValues) as MetricName[]
+  ).filter((metric) => metricValues[metric] !== null);
 
-  const performanceIndexes = metricNames.map(
-    (metric, index) =>
-      getPerformanceIndex(metric, values[index])
+  const labels = availableMetrics.map((metric) =>
+    metric.toUpperCase()
   );
 
+  const thresholdUsage = availableMetrics.map((metric) => {
+    const value = metricValues[metric] as number;
+    const poorThreshold = thresholds[metric].poor;
+
+    return Math.min(
+      Math.round((value / poorThreshold) * 100),
+      100
+    );
+  });
+
   const data = {
-    labels: ["LCP", "INP", "CLS", "FCP"],
+    labels,
     datasets: [
       {
-        label: "Performance Index",
-        data: performanceIndexes,
+        label: "Threshold Usage",
+        data: thresholdUsage,
         borderWidth: 0,
         borderRadius: 6,
       },
@@ -69,6 +73,7 @@ function PerformanceChart({
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+
     scales: {
       y: {
         beginAtZero: true,
@@ -76,16 +81,22 @@ function PerformanceChart({
         ticks: {
           callback: (value: string | number) => `${value}%`,
         },
+        title: {
+          display: true,
+          text: "Poor Threshold Usage",
+        },
       },
     },
+
     plugins: {
       legend: {
         display: false,
       },
+
       tooltip: {
         callbacks: {
           label: (context: { raw: unknown }) =>
-            `Performance Index: ${context.raw}%`,
+            `Threshold usage: ${context.raw}%`,
         },
       },
     },
@@ -96,12 +107,16 @@ function PerformanceChart({
       <div className="section-heading">
         <h2>Performance Overview</h2>
         <p>
-          Normalized performance index across key metrics
+          Metric values relative to their poor-performance thresholds
         </p>
       </div>
 
       <div className="chart-container">
-        <Bar data={data} options={options} />
+        {availableMetrics.length > 0 ? (
+          <Bar data={data} options={options} />
+        ) : (
+          <p>No performance metrics available.</p>
+        )}
       </div>
     </section>
   );

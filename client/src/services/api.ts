@@ -1,18 +1,24 @@
+export interface Recommendation {
+  title: string;
+  description: string;
+}
+
 export interface PerformanceData {
   url: string;
   score: number;
   metrics: {
     lcp: number;
-    inp: number;
+    inp: number | null;
     cls: number;
     fcp: number;
   };
-  recommendations: string[];
+  recommendations: Recommendation[];
 }
 
 interface PerformanceResponse {
   success: boolean;
-  data: PerformanceData;
+  data?: PerformanceData;
+  error?: string;
 }
 
 export const analyzePerformance = async (
@@ -22,11 +28,13 @@ export const analyzePerformance = async (
     `http://localhost:5000/api/performance?url=${encodeURIComponent(url)}`
   );
 
-  if (!response.ok) {
-    throw new Error("Unable to analyze website performance");
-  }
-
   const result: PerformanceResponse = await response.json();
+
+  if (!response.ok || !result.success || !result.data) {
+    throw new Error(
+      result.error || "Unable to analyze website performance"
+    );
+  }
 
   return result.data;
 };

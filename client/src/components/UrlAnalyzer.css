@@ -1,73 +1,117 @@
 .url-analyzer {
-  width: 100%;
-}
-
-.url-input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-.url-input-group label {
+.url-analyzer label {
   font-size: 14px;
   font-weight: 600;
   color: #344054;
 }
 
-.url-input-row {
+.url-input-group {
   display: flex;
   gap: 12px;
 }
 
-.url-input-row input {
+.url-input-group input {
   flex: 1;
-  min-width: 0;
   height: 46px;
   padding: 0 14px;
   border: 1px solid #d0d5dd;
-  border-radius: 10px;
+  border-radius: 8px;
   outline: none;
+  font-size: 15px;
   color: #101828;
   background: #ffffff;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.url-input-row input::placeholder {
-  color: #98a2b3;
+.url-input-group input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
 }
 
-.url-input-row input:focus {
-  border-color: #6941c6;
-  box-shadow: 0 0 0 3px rgba(105, 65, 198, 0.12);
+.url-input-group input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
 }
 
-.url-input-row button {
-  min-width: 110px;
+.url-input-group button {
+  min-width: 120px;
   height: 46px;
   padding: 0 20px;
   border: none;
-  border-radius: 10px;
-  background: #6941c6;
+  border-radius: 8px;
+  background: #4f46e5;
   color: #ffffff;
+  font-size: 15px;
   font-weight: 600;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.url-input-row button:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-1px);
+.url-input-group button:hover:not(:disabled) {
+  background: #4338ca;
 }
 
-.url-input-row button:disabled {
-  opacity: 0.6;
+.url-input-group button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
-@media (max-width: 600px) {
-  .url-input-row {
+.url-input-group button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Loading state */
+
+.analysis-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0 8px;
+  text-align: center;
+}
+
+.analysis-loader > dotlottie-player,
+.analysis-loader > canvas {
+  width: 180px;
+  height: 180px;
+}
+
+.analysis-loader-content {
+  margin-top: 4px;
+}
+
+.analysis-loader-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.analysis-loader-description {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #667085;
+}
+
+/* Responsive */
+
+@media (max-width: 640px) {
+  .url-input-group {
     flex-direction: column;
   }
 
-  .url-input-row button {
+  .url-input-group button {
     width: 100%;
+  }
+
+  .analysis-loader {
+    padding-top: 16px;
   }
 }
