@@ -21,7 +21,7 @@ function App() {
     setData(null);
 
     if (!url.trim()) {
-      setError("Please enter a website URL");
+      setError("Please fill out this field.");
       return;
     }
 
