@@ -1,17 +1,21 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend API for the Frontend Performance Analyzer",
+  "main": "dist/server.js",
   "scripts": {
     "start": "tsx src/server.ts",
-    "dev": "tsx watch src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/server.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "lighthouse",
+    "performance",
+    "express",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "chrome-launcher": "^1.2.2",
     "cors": "^2.8.6",
